@@ -28,7 +28,7 @@ export default function createTsCompiler(option: TSCompilerOption = {}): TSCompi
 			}
 			const info = msg.toString()
 			console.info(info)
-			if (info.indexOf('Compilation complete') !== -1) {
+			if (!buildSuccess && info.indexOf('Compilation complete') !== -1) {
 				buildSuccess = true
 				onBuildSuccess()
 			} else if (buildSuccess) {
