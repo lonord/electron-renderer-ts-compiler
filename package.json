@@ -1,11 +1,12 @@
 {
   "name": "@lonord/electron-renderer-ts-compiler",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Typescript compiler and watcher of electron renderer",
   "main": "lib/",
   "types": "lib/",
   "scripts": {
     "build": "rimraf lib && tsc -d",
+    "build4debug": "rimraf lib && tsc -d --inlineSourceMap",
     "prepublishOnly": "npm run build"
   },
   "repository": {
@@ -22,7 +23,8 @@
   "devDependencies": {
     "@types/debug": "0.0.30",
     "@types/node": "^9.4.6",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "typescript": "^2.7.2"
   },
   "dependencies": {
     "debug": "^3.1.0"

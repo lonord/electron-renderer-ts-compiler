@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "jsx": "react",
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "removeComments": true,
+    "inlineSourceMap": true
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

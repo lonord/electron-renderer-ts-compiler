@@ -3,3 +3,7 @@ src/
 node_modules/
 .vscode/
 *.log
+tsconfig.json
+tsconfig.*.json
+tslint.json
+example/

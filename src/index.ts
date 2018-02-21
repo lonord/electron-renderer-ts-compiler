@@ -23,12 +23,15 @@ export default function createTsCompiler(option: TSCompilerOption = {}): TSCompi
 		let buildSuccess = false
 		child.stdout.on('data', (msg) => {
 			log('stdout data: %O', msg)
+			if (isClearChar(msg as Buffer)) {
+				return
+			}
 			const info = msg.toString()
 			console.info(info)
-			if (!buildSuccess && info.indexOf('Compilation complete') !== -1) {
+			if (info.indexOf('Compilation complete') !== -1) {
 				buildSuccess = true
 				onBuildSuccess()
-			} else {
+			} else if (buildSuccess) {
 				onUpdate && onUpdate()
 			}
 		})
@@ -45,4 +48,11 @@ export default function createTsCompiler(option: TSCompilerOption = {}): TSCompi
 			}
 		})
 	}
+}
+
+function isClearChar(data: Buffer) {
+	if (data && data.length > 1) {
+		return data[0] === 27 && data[1] === 99
+	}
+	return false
 }
