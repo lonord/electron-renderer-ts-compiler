@@ -1,4 +1,7 @@
 import { spawn } from 'child_process'
+import * as debug from 'debug'
+
+const log = debug('electron-renderer-ts-compiler')
 
 export type TSCompiler = (onBuildSuccess: () => void, onUpdate?: () => void) => void
 export interface TSCompilerOption {
@@ -8,15 +11,21 @@ export interface TSCompilerOption {
 }
 
 export default function createTsCompiler(option: TSCompilerOption = {}): TSCompiler {
+	log('user provided option: %j', option)
 	const tsc = option.tsc || './node_modules/.bin/tsc'
 	const tsconfig = option.tsconfig || 'tsconfig.renderer.json'
 	const cwd = option.cwd || process.cwd()
+	log('tsc: %s', tsc)
+	log('tsconfig: %s', tsconfig)
+	log('cwd: %s', cwd)
 	return (onBuildSuccess: () => void, onUpdate?: () => void) => {
 		const child = spawn(tsc, ['-w', '-p', tsconfig], { cwd })
 		let buildSuccess = false
 		child.stdout.on('data', (msg) => {
-			console.info(msg.toString())
-			if (!buildSuccess) {
+			log('stdout data: %O', msg)
+			const info = msg.toString()
+			console.info(info)
+			if (!buildSuccess && info.indexOf('Compilation complete') !== -1) {
 				buildSuccess = true
 				onBuildSuccess()
 			} else {
@@ -24,9 +33,11 @@ export default function createTsCompiler(option: TSCompilerOption = {}): TSCompi
 			}
 		})
 		child.stderr.on('data', (msg) => {
+			log('stderr data: %O', msg)
 			console.error(msg.toString())
 		})
 		child.on('close', (code, signal) => {
+			log('close event: code=%n, signal=%s', code, signal)
 			if (signal === 'SIGINT' || signal === 'SIGTERM') {
 				process.exit(0)
 			} else {

@@ -1,6 +1,6 @@
 {
   "name": "@lonord/electron-renderer-ts-compiler",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Typescript compiler and watcher of electron renderer",
   "main": "lib/",
   "types": "lib/",
@@ -20,7 +20,11 @@
   "author": "Loy B. <lonord@qq.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/debug": "0.0.30",
     "@types/node": "^9.4.6",
     "rimraf": "^2.6.2"
+  },
+  "dependencies": {
+    "debug": "^3.1.0"
   }
 }
