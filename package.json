@@ -1,0 +1,26 @@
+{
+  "name": "@lonord/electron-renderer-ts-compiler",
+  "version": "1.0.0",
+  "description": "Typescript compiler and watcher of electron renderer",
+  "main": "lib/",
+  "types": "lib/",
+  "scripts": {
+    "build": "rimraf lib && tsc -d",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@lonord.name:/~/electron-renderer-ts-compiler.git"
+  },
+  "keywords": [
+    "electron",
+    "renderer",
+    "typescript"
+  ],
+  "author": "Loy B. <lonord@qq.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^9.4.6",
+    "rimraf": "^2.6.2"
+  }
+}
