@@ -1,5 +1,6 @@
 import { spawn } from 'child_process'
 import * as debug from 'debug'
+import * as debounce from 'lodash.debounce'
 
 const log = debug('electron-renderer-ts-compiler')
 
@@ -8,6 +9,7 @@ export interface TSCompilerOption {
 	tsc?: string
 	tsconfig?: string
 	cwd?: string
+	updateDelayTime?: number
 }
 
 export default function createTsCompiler(option: TSCompilerOption = {}): TSCompiler {
@@ -15,12 +17,15 @@ export default function createTsCompiler(option: TSCompilerOption = {}): TSCompi
 	const tsc = option.tsc || './node_modules/.bin/tsc'
 	const tsconfig = option.tsconfig || 'tsconfig.renderer.json'
 	const cwd = option.cwd || process.cwd()
+	const updateDelayTime = option.updateDelayTime || 1000
 	log('tsc: %s', tsc)
 	log('tsconfig: %s', tsconfig)
 	log('cwd: %s', cwd)
+	log('updateDelayTime: %n', updateDelayTime)
 	return (onBuildSuccess: () => void, onUpdate?: () => void) => {
 		const child = spawn(tsc, ['-w', '-p', tsconfig], { cwd })
 		let buildSuccess = false
+		const debouncedUpdate = onUpdate ? debounce(onUpdate, updateDelayTime) : onUpdate
 		child.stdout.on('data', (msg) => {
 			log('stdout data: %O', msg)
 			if (isClearChar(msg as Buffer)) {
@@ -28,11 +33,13 @@ export default function createTsCompiler(option: TSCompilerOption = {}): TSCompi
 			}
 			const info = msg.toString()
 			console.info(info)
-			if (!buildSuccess && info.indexOf('Compilation complete') !== -1) {
-				buildSuccess = true
-				onBuildSuccess()
-			} else if (buildSuccess) {
-				onUpdate && onUpdate()
+			if (info.indexOf('Compilation complete') !== -1) {
+				if (!buildSuccess) {
+					buildSuccess = true
+					onBuildSuccess()
+				} else {
+					debouncedUpdate && debouncedUpdate()
+				}
 			}
 		})
 		child.stderr.on('data', (msg) => {
